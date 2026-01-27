@@ -140,6 +140,16 @@ const App: React.FC = () => {
                   <span>Visit Website</span>
                   <ExternalLink size={10} />
                 </a>
+                
+                <a 
+                  href="https://www.growthforce.meti.pro" 
+                  target="_blank" 
+                  rel="noopener noreferrer"
+                  className="flex items-center gap-1 hover:text-brand-500 transition-colors"
+                >
+                  <span>Apply as an Executive/Consultant</span>
+                  <ExternalLink size={10} />
+                </a>
                 <button 
                   onClick={() => setView(AppView.ADMIN)}
                   className="flex items-center gap-1 opacity-40 hover:opacity-100 transition-opacity"
