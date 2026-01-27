@@ -99,6 +99,7 @@ export const analyzeGrowth = async (data: DiagnosticState): Promise<AssessmentRe
 
       BUSINESS PROFILE:
       - Company Name: ${data.companyName}
+      - Value Proposition: ${data.valueProposition}
       - Industry: ${data.industry}
       - Business Model: ${data.businessModel}
       - Annual Revenue: ${data.annualRevenue}

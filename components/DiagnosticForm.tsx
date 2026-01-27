@@ -27,6 +27,7 @@ export const DiagnosticForm: React.FC<Props> = ({ onComplete }) => {
   
   const [formData, setFormData] = useState<DiagnosticState>({
     companyName: '',
+    valueProposition: '',
     industry: 'SaaS',
     businessModel: 'SaaS',
     annualRevenue: '$1M - $5M',
@@ -53,11 +54,11 @@ export const DiagnosticForm: React.FC<Props> = ({ onComplete }) => {
         setError("Please enter your Company Name.");
         return false;
       }
+      if (!formData.valueProposition.trim()) {
+        setError("Please briefly describe your company and value proposition.");
+        return false;
+      }
       if (formData.industry === 'Others' || !formData.industry) {
-         // If they selected Others but didn't type anything (we rely on the input updating the state directly)
-         // In this implementation, if they type in the 'Specify' box, it overwrites 'Others' in state.
-         // So we just need to ensure it's not empty string if we want to be strict, 
-         // but 'Others' is technically a value. Let's strictly check for empty string if we cleared it.
          if (formData.industry === '') {
             setError("Please specify your industry.");
             return false;
@@ -115,6 +116,17 @@ export const DiagnosticForm: React.FC<Props> = ({ onComplete }) => {
                   placeholder="Acme Corp"
                   autoFocus
                 />
+                
+                <div>
+                  <label className="block text-sm font-medium text-slate-400 mb-2">Briefly describe company and value proposition</label>
+                  <textarea 
+                    value={formData.valueProposition}
+                    onChange={(e) => handleChange('valueProposition', e.target.value)}
+                    placeholder="e.g. We provide AI-driven logistics optimization for last-mile delivery fleets to reduce fuel costs by 15%."
+                    className="w-full bg-slate-900 border border-slate-700 rounded-lg px-4 py-3 text-white focus:outline-none focus:ring-2 focus:ring-brand-500 focus:border-transparent transition-all h-24 resize-none"
+                  />
+                </div>
+
                 <div>
                   <Select
                     label="Industry"

@@ -10,6 +10,7 @@ export enum AppView {
 
 export interface DiagnosticState {
   companyName: string;
+  valueProposition: string; // New field for company description
   industry: string;
   businessModel: string;
   annualRevenue: string;
@@ -18,8 +19,8 @@ export interface DiagnosticState {
   biggestChallenge: string;
   marketingChannel: string;
   cac: string;
-  ltv: string; // New: Lifetime Value
-  paybackPeriod: string; // New: Time to recover CAC
+  ltv: string; 
+  paybackPeriod: string; 
   techStackRating: number;
   salesCycleLength: string;
   customerRetention: number;
