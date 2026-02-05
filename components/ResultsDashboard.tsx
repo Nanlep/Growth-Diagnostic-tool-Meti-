@@ -81,7 +81,8 @@ export const ResultsDashboard: React.FC<Props> = ({ result, onSchedule }) => {
               <Printer size={16} />
               <span className="hidden sm:inline">Print Report</span>
             </button>
-            <a 
+            {/* Meti link on diagnosis report page */}
+            {/* <a 
               href="https://meti.pro"
               target="_blank"
               rel="noopener noreferrer"
@@ -89,7 +90,7 @@ export const ResultsDashboard: React.FC<Props> = ({ result, onSchedule }) => {
             >
               <ExternalLink size={16} />
               <span className="hidden sm:inline">Meti.pro</span>
-            </a>
+            </a> */}
             <button 
               onClick={onSchedule}
               className="bg-brand-600 hover:bg-brand-500 text-white px-3 sm:px-5 py-2 rounded-lg text-sm font-medium transition-colors shadow-lg shadow-brand-500/20 flex items-center gap-2"
@@ -233,7 +234,8 @@ export const ResultsDashboard: React.FC<Props> = ({ result, onSchedule }) => {
             <h3 className="text-2xl font-bold text-white mb-2">Ready to implement this plan?</h3>
             <p className="text-slate-300 mb-6">Our experts can help you execute these recommendations and scale faster.</p>
             <div className="flex flex-col sm:flex-row justify-center items-center gap-4">
-              <a 
+              {/* Meti link on results page below action plan */}
+              {/* <a 
                 href="https://meti.pro"
                 target="_blank"
                 rel="noopener noreferrer"
@@ -241,7 +243,7 @@ export const ResultsDashboard: React.FC<Props> = ({ result, onSchedule }) => {
               >
                 <span>Explore Meti.pro</span>
                 <ExternalLink size={16} />
-              </a>
+              </a> */}
               <button 
                 onClick={onSchedule}
                 className="px-8 py-3 bg-white text-indigo-900 font-bold rounded-lg hover:bg-indigo-50 transition-colors shadow-lg w-full sm:w-auto"
