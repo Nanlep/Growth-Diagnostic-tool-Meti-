@@ -59,6 +59,7 @@ export interface BookingRequest {
   date: string;
   time: string;
   notes?: string;
+  referrer?: string; // New field for Referrer ID/Name
   diagnosticScore?: number;
   diagnosticSummary?: string;
   businessModel?: string; 

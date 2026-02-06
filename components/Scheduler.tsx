@@ -45,7 +45,7 @@ export const Scheduler: React.FC<Props> = ({
 }) => {
   const [isSaved, setIsSaved] = useState(false);
   const [isSaving, setIsSaving] = useState(false);
-  const [formData, setFormData] = useState({ name: '', email: '', notes: '' });
+  const [formData, setFormData] = useState({ name: '', email: '', notes: '', referrer: '' });
 
   // Debug logging to help troubleshoot
   useEffect(() => {
@@ -70,6 +70,7 @@ export const Scheduler: React.FC<Props> = ({
        date: new Date().toISOString(),
        time: 'Pending',
        notes: formData.notes,
+       referrer: formData.referrer,
        diagnosticScore,
        diagnosticSummary,
        businessModel,
@@ -150,6 +151,16 @@ export const Scheduler: React.FC<Props> = ({
                         onChange={e => setFormData({...formData, email: e.target.value})}
                         className="w-full bg-slate-900 border border-slate-700 rounded-lg px-4 py-3 text-white focus:outline-none focus:ring-2 focus:ring-brand-500"
                         placeholder="jane@company.com"
+                      />
+                    </div>
+                    <div>
+                      <label className="block text-sm font-medium text-slate-400 mb-1">Referrer ID/Name (Optional)</label>
+                      <input 
+                        type="text"
+                        value={formData.referrer}
+                        onChange={e => setFormData({...formData, referrer: e.target.value})}
+                        className="w-full bg-slate-900 border border-slate-700 rounded-lg px-4 py-3 text-white focus:outline-none focus:ring-2 focus:ring-brand-500"
+                        placeholder="e.g. Partner123 or John Smith"
                       />
                     </div>
                     <div>

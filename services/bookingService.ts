@@ -32,6 +32,7 @@ export const saveLeadToDb = async (request: BookingRequest): Promise<{ success: 
         diagnostic_score: request.diagnosticScore,
         diagnostic_summary: request.diagnosticSummary,
         notes: request.notes,
+        referrer: request.referrer, // Map referrer field
         status: 'Pending Booking' 
       }]);
 
@@ -88,6 +89,7 @@ export const getAdminLeads = async (): Promise<StoredLead[]> => {
       time: 'Via Calendly',
       slotId: 'N/A',
       notes: row.notes,
+      referrer: row.referrer, // Retrieve referrer field
       diagnosticScore: row.diagnostic_score,
       diagnosticSummary: row.diagnostic_summary,
       businessModel: row.business_model,
