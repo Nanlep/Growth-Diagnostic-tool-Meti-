@@ -29,13 +29,13 @@ export const DiagnosticForm: React.FC<Props> = ({ onComplete }) => {
     companyName: '',
     valueProposition: '',
     industry: 'SaaS',
-    businessModel: 'SaaS',
+    businessModel: '',
     annualRevenue: '$1M - $5M',
     preRevenue: '',
     employeeCount: '11-50',
-    primaryGoal: 'Increase Revenue',
-    biggestChallenge: 'Lead Generation',
-    marketingChannel: 'Outbound Sales',
+    primaryGoal: '',
+    biggestChallenge: '',
+    marketingChannel: '',
     cac: '$200 - $1,000',
     ltv: '$1,000 - $5,000',
     paybackPeriod: '6-12 Months',
@@ -43,6 +43,22 @@ export const DiagnosticForm: React.FC<Props> = ({ onComplete }) => {
     techStackRating: 5,
     customerRetention: 5
   });
+
+  // Helper to toggle a value in a comma-separated string
+  const toggleMulti = (field: keyof DiagnosticState, value: string) => {
+    setFormData(prev => {
+      const current = (prev[field] as string) || '';
+      const items = current ? current.split(', ').filter(Boolean) : [];
+      const idx = items.indexOf(value);
+      if (idx >= 0) {
+        items.splice(idx, 1);
+      } else {
+        items.push(value);
+      }
+      return { ...prev, [field]: items.join(', ') };
+    });
+    if (error) setError(null);
+  };
 
   const handleChange = (field: keyof DiagnosticState, value: any) => {
     setFormData(prev => ({ ...prev, [field]: value }));
@@ -64,6 +80,26 @@ export const DiagnosticForm: React.FC<Props> = ({ onComplete }) => {
             setError("Please specify your industry.");
             return false;
          }
+      }
+    }
+    if (step === 1) {
+      if (!formData.businessModel.trim()) {
+        setError("Please select at least one business model.");
+        return false;
+      }
+    }
+    if (step === 2) {
+      if (!formData.primaryGoal.trim()) {
+        setError("Please select at least one growth goal.");
+        return false;
+      }
+      if (!formData.biggestChallenge.trim()) {
+        setError("Please select at least one challenge.");
+        return false;
+      }
+      if (!formData.marketingChannel.trim()) {
+        setError("Please select at least one marketing channel.");
+        return false;
       }
     }
     return true;
@@ -146,20 +182,12 @@ export const DiagnosticForm: React.FC<Props> = ({ onComplete }) => {
                     </div>
                   )}
                 </div>
-                <div className="grid grid-cols-2 gap-4">
-                  <Select
+                <Select
                     label="Annual Revenue"
                     value={formData.annualRevenue}
-                    options={['<$10k', '$10k - $100k', '$100k - $500k', '$500k - $1M', '$1M - $5M', '$5M - $20M', '$20M+']}
+                    options={['Pre-Revenue', '<$10k', '$10k - $100k', '$100k - $500k', '$500k - $1M', '$1M - $5M', '$5M - $20M', '$20M+']}
                     onChange={(v) => handleChange('annualRevenue', v)}
                   />
-                  <Select
-                    label="Pre-Revenue"
-                    value={formData.preRevenue}
-                    options={['<$10k', '$10k - $100k', '$100k - $500k', '$500k - $1M', '$1M - $5M', '$5M - $20M', '$20M+']}
-                    onChange={(v) => handleChange('preRevenue', v)}
-                  />
-                </div>
                 <div className="grid grid-cols-2 gap-4">
                   <Select
                     label="Employees"
@@ -175,35 +203,38 @@ export const DiagnosticForm: React.FC<Props> = ({ onComplete }) => {
               <div className="space-y-6">
                 <div>
                   <h2 className="text-2xl font-bold text-white mb-2">How do you make money?</h2>
-                  <p className="text-slate-400 text-sm mb-6">Select the primary business model that drives your growth.</p>
+                  <p className="text-slate-400 text-sm mb-6">Select all business models that apply to your company.</p>
                 </div>
                 <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-3">
-                  {BUSINESS_MODELS.map((model) => (
-                    <button
-                      key={model.id}
-                      onClick={() => handleChange('businessModel', model.id)}
-                      className={`p-4 rounded-xl border text-left transition-all relative overflow-hidden group ${
-                        formData.businessModel === model.id 
-                          ? 'bg-brand-900/20 border-brand-500 shadow-[0_0_15px_rgba(20,184,166,0.3)]' 
-                          : 'bg-slate-900 border-slate-700 hover:border-slate-500 hover:bg-slate-800'
-                      }`}
-                    >
-                      <div className={`mb-3 ${formData.businessModel === model.id ? 'text-brand-400' : 'text-slate-500 group-hover:text-slate-300'}`}>
-                        {model.icon}
-                      </div>
-                      <div className={`font-semibold text-sm mb-1 ${formData.businessModel === model.id ? 'text-white' : 'text-slate-200'}`}>
-                        {model.label}
-                      </div>
-                      <div className="text-xs text-slate-500 leading-tight">
-                        {model.desc}
-                      </div>
-                      {formData.businessModel === model.id && (
-                        <div className="absolute top-2 right-2 text-brand-500">
-                          <Check size={14} />
+                  {BUSINESS_MODELS.map((model) => {
+                    const selected = formData.businessModel.split(', ').filter(Boolean).includes(model.id);
+                    return (
+                      <button
+                        key={model.id}
+                        onClick={() => toggleMulti('businessModel', model.id)}
+                        className={`p-4 rounded-xl border text-left transition-all relative overflow-hidden group ${
+                          selected 
+                            ? 'bg-brand-900/20 border-brand-500 shadow-[0_0_15px_rgba(20,184,166,0.3)]' 
+                            : 'bg-slate-900 border-slate-700 hover:border-slate-500 hover:bg-slate-800'
+                        }`}
+                      >
+                        <div className={`mb-3 ${selected ? 'text-brand-400' : 'text-slate-500 group-hover:text-slate-300'}`}>
+                          {model.icon}
                         </div>
-                      )}
-                    </button>
-                  ))}
+                        <div className={`font-semibold text-sm mb-1 ${selected ? 'text-white' : 'text-slate-200'}`}>
+                          {model.label}
+                        </div>
+                        <div className="text-xs text-slate-500 leading-tight">
+                          {model.desc}
+                        </div>
+                        {selected && (
+                          <div className="absolute top-2 right-2 text-brand-500">
+                            <Check size={14} />
+                          </div>
+                        )}
+                      </button>
+                    );
+                  })}
                 </div>
               </div>
             )}
@@ -211,23 +242,23 @@ export const DiagnosticForm: React.FC<Props> = ({ onComplete }) => {
             {currentStep === 2 && (
               <div className="space-y-6">
                 <h2 className="text-2xl font-bold text-white">Strategy & Goals</h2>
-                <Select
-                  label="Primary Growth Goal"
+                <MultiSelect
+                  label="Growth Goals (select all that apply)"
                   value={formData.primaryGoal}
                   options={['Increase Revenue', 'Market Expansion', 'Profitability', 'Brand Awareness', 'Customer Retention']}
-                  onChange={(v) => handleChange('primaryGoal', v)}
+                  onToggle={(v) => toggleMulti('primaryGoal', v)}
                 />
-                <Select
-                  label="Biggest Challenge"
+                <MultiSelect
+                  label="Biggest Challenges (select all that apply)"
                   value={formData.biggestChallenge}
                   options={['Lead Generation', 'Sales Closing', 'Operational Efficiency', 'Hiring/Talent', 'Churn/Retention']}
-                  onChange={(v) => handleChange('biggestChallenge', v)}
+                  onToggle={(v) => toggleMulti('biggestChallenge', v)}
                 />
-                 <Select
-                  label="Primary Marketing Channel"
+                 <MultiSelect
+                  label="Marketing Channels (select all that apply)"
                   value={formData.marketingChannel}
                   options={['SEO/Content', 'Paid Ads', 'Outbound Sales', 'Referrals/Partners', 'Social Media']}
-                  onChange={(v) => handleChange('marketingChannel', v)}
+                  onToggle={(v) => toggleMulti('marketingChannel', v)}
                 />
               </div>
             )}
@@ -380,6 +411,34 @@ const Select = ({ label, value, options, onChange }: any) => (
     </div>
   </div>
 );
+
+const MultiSelect = ({ label, value, options, onToggle }: { label: string; value: string; options: string[]; onToggle: (v: string) => void }) => {
+  const selected = value ? value.split(', ').filter(Boolean) : [];
+  return (
+    <div className="w-full">
+      <label className="block text-sm font-medium text-slate-400 mb-2">{label}</label>
+      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-2">
+        {options.map((opt: string) => {
+          const isSelected = selected.includes(opt);
+          return (
+            <button
+              key={opt}
+              onClick={() => onToggle(opt)}
+              className={`px-4 py-3 rounded-lg text-sm text-left transition-all border flex items-center justify-between gap-2 ${
+                isSelected
+                  ? 'bg-brand-600/20 border-brand-500 text-white shadow-[0_0_15px_rgba(20,184,166,0.3)]'
+                  : 'bg-slate-900 border-slate-700 text-slate-400 hover:border-slate-500 hover:text-slate-200'
+              }`}
+            >
+              <span>{opt}</span>
+              {isSelected && <Check size={14} className="text-brand-400 flex-shrink-0" />}
+            </button>
+          );
+        })}
+      </div>
+    </div>
+  );
+};
 
 const RangeInput = ({ label, value, onChange, min, max, description }: any) => (
   <div>

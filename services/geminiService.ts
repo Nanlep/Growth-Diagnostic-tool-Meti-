@@ -29,7 +29,7 @@ const getEnvVar = (key: string) => {
  * (Vercel/Netlify/Localhost) without a dedicated backend API deployment, we use the 
  * SDK client-side.
  * 
- * We use 'gemini-3-flash-preview' for high-speed, intelligent business reasoning.
+ * We use 'gemini-2.0-flash' for high-speed, intelligent business reasoning.
  */
 export const analyzeGrowth = async (data: DiagnosticState): Promise<AssessmentResult> => {
   // Try multiple naming conventions for the API Key
@@ -91,7 +91,7 @@ export const analyzeGrowth = async (data: DiagnosticState): Promise<AssessmentRe
   };
 
   try {
-    const model = "gemini-3-flash";
+    const model = "gemini-2.0-flash";
     
     const prompt = `
       Act as a Senior Management Consultant (ex-McKinsey/Bain) specializing in SMB and Enterprise growth.
