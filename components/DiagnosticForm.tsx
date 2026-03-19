@@ -31,6 +31,7 @@ export const DiagnosticForm: React.FC<Props> = ({ onComplete }) => {
     industry: 'SaaS',
     businessModel: 'SaaS',
     annualRevenue: '$1M - $5M',
+    preRevenue: '',
     employeeCount: '11-50',
     primaryGoal: 'Increase Revenue',
     biggestChallenge: 'Lead Generation',
@@ -152,6 +153,14 @@ export const DiagnosticForm: React.FC<Props> = ({ onComplete }) => {
                     options={['<$10k', '$10k - $100k', '$100k - $500k', '$500k - $1M', '$1M - $5M', '$5M - $20M', '$20M+']}
                     onChange={(v) => handleChange('annualRevenue', v)}
                   />
+                  <Select
+                    label="Pre-Revenue"
+                    value={formData.preRevenue}
+                    options={['<$10k', '$10k - $100k', '$100k - $500k', '$500k - $1M', '$1M - $5M', '$5M - $20M', '$20M+']}
+                    onChange={(v) => handleChange('preRevenue', v)}
+                  />
+                </div>
+                <div className="grid grid-cols-2 gap-4">
                   <Select
                     label="Employees"
                     value={formData.employeeCount}

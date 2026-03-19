@@ -1,14 +1,12 @@
 import React, { useState, useEffect } from 'react';
 import { ArrowLeft, Loader2, Save, ExternalLink, Calendar as CalendarIcon, AlertTriangle } from 'lucide-react';
 import { saveLeadToDb } from '../services/bookingService';
+import { DiagnosticState } from '../types';
 
 interface Props {
-  companyName: string;
+  diagnosticData: DiagnosticState | null;
   diagnosticScore?: number;
   diagnosticSummary?: string;
-  businessModel?: string;
-  annualRevenue?: string;
-  employeeCount?: string;
   onBack: () => void;
 }
 
@@ -35,14 +33,15 @@ const getEnvVar = (key: string) => {
 const GOOGLE_CALENDAR_URL = getEnvVar('VITE_GOOGLE_CALENDAR_URL');
 
 export const Scheduler: React.FC<Props> = ({ 
-  companyName, 
+  diagnosticData,
   diagnosticScore, 
   diagnosticSummary,
-  businessModel, 
-  annualRevenue, 
-  employeeCount,
   onBack 
 }) => {
+  const companyName = diagnosticData?.companyName || 'Your Company';
+  const businessModel = diagnosticData?.businessModel;
+  const annualRevenue = diagnosticData?.annualRevenue;
+
   const [isSaved, setIsSaved] = useState(false);
   const [isSaving, setIsSaving] = useState(false);
   const [formData, setFormData] = useState({ name: '', email: '', notes: '', referrer: '' });
@@ -75,7 +74,19 @@ export const Scheduler: React.FC<Props> = ({
        diagnosticSummary,
        businessModel,
        annualRevenue,
-       employeeCount
+       preRevenue: diagnosticData?.preRevenue,
+       employeeCount: diagnosticData?.employeeCount,
+       valueProposition: diagnosticData?.valueProposition,
+       industry: diagnosticData?.industry,
+       primaryGoal: diagnosticData?.primaryGoal,
+       biggestChallenge: diagnosticData?.biggestChallenge,
+       marketingChannel: diagnosticData?.marketingChannel,
+       cac: diagnosticData?.cac,
+       ltv: diagnosticData?.ltv,
+       paybackPeriod: diagnosticData?.paybackPeriod,
+       salesCycleLength: diagnosticData?.salesCycleLength,
+       techStackRating: diagnosticData?.techStackRating,
+       customerRetention: diagnosticData?.customerRetention,
     });
 
     setIsSaved(true);

@@ -14,6 +14,7 @@ export interface DiagnosticState {
   industry: string;
   businessModel: string;
   annualRevenue: string;
+  preRevenue: string;
   employeeCount: string;
   primaryGoal: string;
   biggestChallenge: string;
@@ -59,12 +60,25 @@ export interface BookingRequest {
   date: string;
   time: string;
   notes?: string;
-  referrer?: string; // New field for Referrer ID/Name
+  referrer?: string;
   diagnosticScore?: number;
   diagnosticSummary?: string;
   businessModel?: string; 
   annualRevenue?: string;
+  preRevenue?: string;
   employeeCount?: string;
+  // Full diagnostic fields
+  valueProposition?: string;
+  industry?: string;
+  primaryGoal?: string;
+  biggestChallenge?: string;
+  marketingChannel?: string;
+  cac?: string;
+  ltv?: string;
+  paybackPeriod?: string;
+  salesCycleLength?: string;
+  techStackRating?: number;
+  customerRetention?: number;
 }
 
 export interface StoredLead extends BookingRequest {

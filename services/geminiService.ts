@@ -91,7 +91,7 @@ export const analyzeGrowth = async (data: DiagnosticState): Promise<AssessmentRe
   };
 
   try {
-    const model = "gemini-3-flash-preview";
+    const model = "gemini-3-flash";
     
     const prompt = `
       Act as a Senior Management Consultant (ex-McKinsey/Bain) specializing in SMB and Enterprise growth.
@@ -103,6 +103,7 @@ export const analyzeGrowth = async (data: DiagnosticState): Promise<AssessmentRe
       - Industry: ${data.industry}
       - Business Model: ${data.businessModel}
       - Annual Revenue: ${data.annualRevenue}
+      - Pre-Revenue: ${data.preRevenue || 'Not specified'}
       - Employees: ${data.employeeCount}
       
       GOALS & CHALLENGES:

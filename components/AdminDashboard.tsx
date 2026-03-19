@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { StoredLead } from '../types';
 import { adminLogin, getAdminLeads } from '../services/bookingService';
-import { Lock, Search, RefreshCcw, LogOut, ArrowLeft, Calendar, User, Building2, Mail, FileText, Activity, Download, Layers } from 'lucide-react';
+import { Lock, Search, RefreshCcw, LogOut, ArrowLeft, Calendar, User, Building2, Mail, FileText, Activity, Download, Layers, ChevronDown, ChevronUp, Target, TrendingUp, DollarSign, Briefcase, Timer, Cpu, Heart, Globe, Megaphone } from 'lucide-react';
 import { format } from 'date-fns';
 
 interface Props {
@@ -17,6 +17,7 @@ export const AdminDashboard: React.FC<Props> = ({ onBack }) => {
   
   const [leads, setLeads] = useState<StoredLead[]>([]);
   const [searchTerm, setSearchTerm] = useState('');
+  const [expandedId, setExpandedId] = useState<string | null>(null);
 
   const handleLogin = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -46,30 +47,39 @@ export const AdminDashboard: React.FC<Props> = ({ onBack }) => {
   const handleExport = () => {
     if (leads.length === 0) return;
 
-    // Define CSV Headers
     const headers = [
       'Booking ID',
       'Status',
       'Date Created',
       'Time/Slot',
       'Company Name',
+      'Value Proposition',
+      'Industry',
       'Business Model',
       'Annual Revenue',
+      'Pre-Revenue',
       'Employee Count',
       'Contact Person',
       'Email Address',
       'Referrer ID',
+      'Primary Goal',
+      'Biggest Challenge',
+      'Marketing Channel',
+      'CAC',
+      'LTV',
+      'Payback Period',
+      'Sales Cycle Length',
+      'Tech Stack Rating',
+      'Customer Retention',
       'Growth Score (0-100)',
       'AI Summary',
       'Client Notes'
     ];
 
-    // Map data to CSV rows
     const csvContent = [
       headers.join(','),
       ...leads.map(lead => {
         const dateStr = lead.date ? format(new Date(lead.date), 'yyyy-MM-dd') : 'N/A';
-        // Helper to escape special characters (quotes, commas) for CSV validity
         const esc = (t: string | undefined) => `"${(t || '').replace(/"/g, '""')}"`;
         
         return [
@@ -78,12 +88,24 @@ export const AdminDashboard: React.FC<Props> = ({ onBack }) => {
           dateStr,
           lead.time,
           esc(lead.companyName),
+          esc(lead.valueProposition),
+          esc(lead.industry),
           esc(lead.businessModel || 'N/A'),
           esc(lead.annualRevenue || 'N/A'),
+          esc(lead.preRevenue || 'N/A'),
           esc(lead.employeeCount || 'N/A'),
           esc(lead.name),
           lead.email,
-          esc(lead.referrer || 'N/A'), // Add referrer to CSV
+          esc(lead.referrer || 'N/A'),
+          esc(lead.primaryGoal || 'N/A'),
+          esc(lead.biggestChallenge || 'N/A'),
+          esc(lead.marketingChannel || 'N/A'),
+          esc(lead.cac || 'N/A'),
+          esc(lead.ltv || 'N/A'),
+          esc(lead.paybackPeriod || 'N/A'),
+          esc(lead.salesCycleLength || 'N/A'),
+          lead.techStackRating || 0,
+          lead.customerRetention || 0,
           lead.diagnosticScore || 0,
           esc(lead.diagnosticSummary),
           esc(lead.notes)
@@ -91,7 +113,6 @@ export const AdminDashboard: React.FC<Props> = ({ onBack }) => {
       })
     ].join('\n');
 
-    // Create a Blob and trigger download
     const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
     const url = URL.createObjectURL(blob);
     const link = document.createElement('a');
@@ -106,7 +127,8 @@ export const AdminDashboard: React.FC<Props> = ({ onBack }) => {
     l.companyName.toLowerCase().includes(searchTerm.toLowerCase()) || 
     l.email.toLowerCase().includes(searchTerm.toLowerCase()) ||
     l.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
-    (l.referrer && l.referrer.toLowerCase().includes(searchTerm.toLowerCase()))
+    (l.referrer && l.referrer.toLowerCase().includes(searchTerm.toLowerCase())) ||
+    (l.industry && l.industry.toLowerCase().includes(searchTerm.toLowerCase()))
   );
 
   const getScoreColor = (score?: number) => {
@@ -236,7 +258,7 @@ export const AdminDashboard: React.FC<Props> = ({ onBack }) => {
             <Search className="absolute left-3 top-1/2 -translate-y-1/2 text-slate-500" size={18} />
             <input 
               type="text" 
-              placeholder="Search companies, emails, referrers..." 
+              placeholder="Search companies, emails, industries, referrers..." 
               value={searchTerm}
               onChange={(e) => setSearchTerm(e.target.value)}
               className="w-full bg-slate-800 border border-slate-700 rounded-lg pl-10 pr-4 py-2 text-white focus:ring-1 focus:ring-brand-500 outline-none"
@@ -250,6 +272,7 @@ export const AdminDashboard: React.FC<Props> = ({ onBack }) => {
             <table className="w-full text-left border-collapse">
               <thead>
                 <tr className="bg-slate-900/50 border-b border-slate-700 text-xs text-slate-400 uppercase tracking-wider">
+                  <th className="p-4 font-medium w-10"></th>
                   <th className="p-4 font-medium w-24">Score</th>
                   <th className="p-4 font-medium">Status</th>
                   <th className="p-4 font-medium">Contact</th>
@@ -262,79 +285,154 @@ export const AdminDashboard: React.FC<Props> = ({ onBack }) => {
               <tbody className="divide-y divide-slate-700">
                 {filteredLeads.length === 0 ? (
                   <tr>
-                    <td colSpan={7} className="p-8 text-center text-slate-500">
+                    <td colSpan={8} className="p-8 text-center text-slate-500">
                       No leads found matching your search.
                     </td>
                   </tr>
                 ) : (
                   filteredLeads.map((lead) => (
-                    <tr key={lead.id} className="hover:bg-slate-700/50 transition-colors group">
-                      <td className="p-4">
-                        <div className={`w-10 h-10 rounded-full flex items-center justify-center font-bold text-sm border ${getScoreColor(lead.diagnosticScore)}`}>
-                          {lead.diagnosticScore || 'N/A'}
-                        </div>
-                      </td>
-                      <td className="p-4">
-                        <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-green-500/10 text-green-400 border border-green-500/20">
-                          {lead.status || 'Active'}
-                        </span>
-                      </td>
-                      <td className="p-4">
-                        <div className="flex flex-col">
-                          <span className="font-medium text-white flex items-center gap-2">
-                             <User size={14} className="text-slate-500" /> {lead.name}
-                          </span>
-                          <span className="text-xs text-slate-400 flex items-center gap-2 mt-1">
-                             <Mail size={14} className="text-slate-500" /> {lead.email}
-                          </span>
-                        </div>
-                      </td>
-                      <td className="p-4">
-                        <div className="flex flex-col gap-1">
-                          <div className="flex items-center gap-2 text-slate-300">
-                            <Building2 size={16} className="text-slate-500" />
-                            {lead.companyName}
+                    <React.Fragment key={lead.id}>
+                      {/* Main Row */}
+                      <tr 
+                        className="hover:bg-slate-700/50 transition-colors group cursor-pointer"
+                        onClick={() => setExpandedId(expandedId === lead.id ? null : lead.id)}
+                      >
+                        <td className="p-4">
+                          <button className="text-slate-500 hover:text-white transition-colors">
+                            {expandedId === lead.id ? <ChevronUp size={16} /> : <ChevronDown size={16} />}
+                          </button>
+                        </td>
+                        <td className="p-4">
+                          <div className={`w-10 h-10 rounded-full flex items-center justify-center font-bold text-sm border ${getScoreColor(lead.diagnosticScore)}`}>
+                            {lead.diagnosticScore || 'N/A'}
                           </div>
-                          {lead.referrer && (
-                            <div className="text-xs text-brand-400 flex items-center gap-1">
-                              Referrer: {lead.referrer}
-                            </div>
-                          )}
-                        </div>
-                      </td>
-                      <td className="p-4">
-                         <div className="flex flex-col">
-                            <span className="text-xs font-semibold text-brand-400 flex items-center gap-1 mb-1">
-                              <Layers size={12} /> {lead.businessModel || 'N/A'}
+                        </td>
+                        <td className="p-4">
+                          <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-green-500/10 text-green-400 border border-green-500/20">
+                            {lead.status || 'Active'}
+                          </span>
+                        </td>
+                        <td className="p-4">
+                          <div className="flex flex-col">
+                            <span className="font-medium text-white flex items-center gap-2">
+                               <User size={14} className="text-slate-500" /> {lead.name}
                             </span>
-                            <div className="text-xs text-slate-400">
-                              {lead.annualRevenue || '-'} <span className="text-slate-600">|</span> {lead.employeeCount ? `${lead.employeeCount} staff` : '-'}
+                            <span className="text-xs text-slate-400 flex items-center gap-2 mt-1">
+                               <Mail size={14} className="text-slate-500" /> {lead.email}
+                            </span>
+                          </div>
+                        </td>
+                        <td className="p-4">
+                          <div className="flex flex-col gap-1">
+                            <div className="flex items-center gap-2 text-slate-300">
+                              <Building2 size={16} className="text-slate-500" />
+                              {lead.companyName}
                             </div>
-                         </div>
-                      </td>
-                      <td className="p-4">
-                        <div className="flex flex-col">
-                           <span className="text-sm text-white font-medium">{lead.date ? format(new Date(lead.date), 'MMM d, yyyy') : '-'}</span>
-                           <span className="text-xs text-brand-400">{lead.time}</span>
-                        </div>
-                      </td>
-                      <td className="p-4 max-w-xs">
-                        <div className="space-y-1">
-                          {lead.notes && (
-                             <div className="flex gap-1 text-xs text-slate-400">
-                               <FileText size={12} className="mt-0.5 flex-shrink-0" /> 
-                               <span className="truncate" title={lead.notes}>{lead.notes}</span>
-                             </div>
-                          )}
-                          {lead.diagnosticSummary && (
-                             <div className="flex gap-1 text-xs text-brand-400/80">
-                               <Activity size={12} className="mt-0.5 flex-shrink-0" /> 
-                               <span className="truncate" title={lead.diagnosticSummary}>{lead.diagnosticSummary}</span>
-                             </div>
-                          )}
-                        </div>
-                      </td>
-                    </tr>
+                            {lead.referrer && (
+                              <div className="text-xs text-brand-400 flex items-center gap-1">
+                                Referrer: {lead.referrer}
+                              </div>
+                            )}
+                          </div>
+                        </td>
+                        <td className="p-4">
+                           <div className="flex flex-col">
+                              <span className="text-xs font-semibold text-brand-400 flex items-center gap-1 mb-1">
+                                <Layers size={12} /> {lead.businessModel || 'N/A'}
+                              </span>
+                              <div className="text-xs text-slate-400">
+                                {lead.annualRevenue || '-'} <span className="text-slate-600">|</span> {lead.employeeCount ? `${lead.employeeCount} staff` : '-'}
+                              </div>
+                           </div>
+                        </td>
+                        <td className="p-4">
+                          <div className="flex flex-col">
+                             <span className="text-sm text-white font-medium">{lead.date ? format(new Date(lead.date), 'MMM d, yyyy') : '-'}</span>
+                             <span className="text-xs text-brand-400">{lead.time}</span>
+                          </div>
+                        </td>
+                        <td className="p-4 max-w-xs">
+                          <div className="space-y-1">
+                            {lead.notes && (
+                               <div className="flex gap-1 text-xs text-slate-400">
+                                 <FileText size={12} className="mt-0.5 flex-shrink-0" /> 
+                                 <span className="truncate" title={lead.notes}>{lead.notes}</span>
+                               </div>
+                            )}
+                            {lead.diagnosticSummary && (
+                               <div className="flex gap-1 text-xs text-brand-400/80">
+                                 <Activity size={12} className="mt-0.5 flex-shrink-0" /> 
+                                 <span className="truncate" title={lead.diagnosticSummary}>{lead.diagnosticSummary}</span>
+                               </div>
+                            )}
+                          </div>
+                        </td>
+                      </tr>
+
+                      {/* Expandable Detail Row */}
+                      {expandedId === lead.id && (
+                        <tr>
+                          <td colSpan={8} className="p-0">
+                            <div className="bg-slate-900/70 border-t border-slate-700/50 p-6 animate-fade-in">
+                              <h4 className="text-sm font-bold text-white mb-4 uppercase tracking-wider">Full Diagnostic Data</h4>
+                              
+                              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+                                {/* Company Profile */}
+                                <div className="bg-slate-800/50 rounded-lg p-4 border border-slate-700/50">
+                                  <h5 className="text-xs font-bold text-slate-400 uppercase tracking-wider mb-3 flex items-center gap-2">
+                                    <Building2 size={12} /> Company Profile
+                                  </h5>
+                                  <div className="space-y-2 text-sm">
+                                    <DetailItem label="Value Proposition" value={lead.valueProposition} />
+                                    <DetailItem label="Industry" value={lead.industry} />
+                                    <DetailItem label="Annual Revenue" value={lead.annualRevenue} />
+                                    <DetailItem label="Pre-Revenue" value={lead.preRevenue} />
+                                    <DetailItem label="Employees" value={lead.employeeCount} />
+                                  </div>
+                                </div>
+
+                                {/* Strategy */}
+                                <div className="bg-slate-800/50 rounded-lg p-4 border border-slate-700/50">
+                                  <h5 className="text-xs font-bold text-slate-400 uppercase tracking-wider mb-3 flex items-center gap-2">
+                                    <Target size={12} /> Strategy & Goals
+                                  </h5>
+                                  <div className="space-y-2 text-sm">
+                                    <DetailItem label="Primary Goal" value={lead.primaryGoal} />
+                                    <DetailItem label="Biggest Challenge" value={lead.biggestChallenge} />
+                                    <DetailItem label="Marketing Channel" value={lead.marketingChannel} />
+                                  </div>
+                                </div>
+
+                                {/* Unit Economics */}
+                                <div className="bg-slate-800/50 rounded-lg p-4 border border-slate-700/50">
+                                  <h5 className="text-xs font-bold text-slate-400 uppercase tracking-wider mb-3 flex items-center gap-2">
+                                    <TrendingUp size={12} /> Unit Economics & Ops
+                                  </h5>
+                                  <div className="space-y-2 text-sm">
+                                    <DetailItem label="CAC" value={lead.cac} />
+                                    <DetailItem label="LTV" value={lead.ltv} />
+                                    <DetailItem label="Payback Period" value={lead.paybackPeriod} />
+                                    <DetailItem label="Sales Cycle" value={lead.salesCycleLength} />
+                                    <DetailItem label="Tech Stack" value={lead.techStackRating ? `${lead.techStackRating}/10` : undefined} />
+                                    <DetailItem label="Retention" value={lead.customerRetention ? `${lead.customerRetention}/10` : undefined} />
+                                  </div>
+                                </div>
+                              </div>
+
+                              {/* AI Summary (full view) */}
+                              {lead.diagnosticSummary && (
+                                <div className="mt-4 bg-slate-800/50 rounded-lg p-4 border border-slate-700/50">
+                                  <h5 className="text-xs font-bold text-slate-400 uppercase tracking-wider mb-2 flex items-center gap-2">
+                                    <Activity size={12} /> AI Assessment Summary
+                                  </h5>
+                                  <p className="text-sm text-slate-300 leading-relaxed">{lead.diagnosticSummary}</p>
+                                </div>
+                              )}
+                            </div>
+                          </td>
+                        </tr>
+                      )}
+                    </React.Fragment>
                   ))
                 )}
               </tbody>
@@ -345,3 +443,11 @@ export const AdminDashboard: React.FC<Props> = ({ onBack }) => {
     </div>
   );
 };
+
+// Helper component for detail items
+const DetailItem = ({ label, value }: { label: string; value?: string }) => (
+  <div className="flex justify-between items-start">
+    <span className="text-slate-500 text-xs">{label}</span>
+    <span className="text-slate-200 text-xs text-right max-w-[60%]">{value || '—'}</span>
+  </div>
+);

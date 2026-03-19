@@ -104,12 +104,9 @@ const App: React.FC = () => {
 
         {view === AppView.SCHEDULING && (
           <Scheduler 
-            companyName={diagnosticData?.companyName || 'Your Company'} 
+            diagnosticData={diagnosticData}
             diagnosticScore={result?.overallScore}
             diagnosticSummary={result?.summary}
-            businessModel={diagnosticData?.businessModel}
-            annualRevenue={diagnosticData?.annualRevenue}
-            employeeCount={diagnosticData?.employeeCount}
             onBack={() => setView(AppView.RESULTS)} 
           />
         )}
